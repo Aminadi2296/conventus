@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detalles de la Reunión</title>
+  </head>
+  <body>
+    <h1>Detalles de la Reunión</h1>
+    <p><strong>ID:</strong> <%= meeting.id %></p>
+    <p><strong>Título:</strong> <%= meeting.title %></p>
+    <p><strong>Descripción:</strong> <%= meeting.description %></p>
+
+    <!-- Mostrar propuestas existentes -->
+    <h2>Propuestas Actuales</h2>
+    <% if (meeting.proposals && meeting.proposals.length > 0) { %>
+    <ul>
+      <% meeting.proposals.forEach(proposal => { %>
+      <li>
+        <strong><%= proposal.username %>:</strong>
+        <%= proposal.availability.join(', ') %>
+      </li>
+      <% }); %>
+    </ul>
+    <% } else { %>
+    <p>No hay propuestas aún.</p>
+    <% } %>
+
+    <!-- Botón para mostrar/ocultar formulario -->
+    <button id="addUserButton">Añadir Usuario</button>
+
+    <!-- Formulario para añadir disponibilidad -->
+    <div id="availabilityForm" style="display: none">
+      <h2>Disponibilidad del Usuario</h2>
+      <form id="userAvailabilityForm">
+        <label for="username">Nombre del Usuario:</label>
+        <input
+          type="text"
+          id="username"
+          required
+          placeholder="Ej: José, María, Cornelio"
+        />
+
+        <h3>Selecciona tu disponibilidad:</h3>
+        <table border="1">
+          <thead>
+            <tr>
+              <th>Hora/Día</th>
+              <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado',
+              'Domingo'].forEach(day => { %>
+              <th><%= day %></th>
+              <% }); %>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let hour = 0; hour < 24; hour++) { %>
+            <tr>
+              <% const formattedHour = hour.toString().padStart(2, '0') + ':00';
+              %>
+              <td><%= formattedHour %></td>
+
+              <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado',
+              'Domingo'].forEach(day => { %>
+              <td>
+                <input
+                  type="checkbox"
+                  name="availability"
+                  value="<%= day %>-<%= formattedHour %>"
+                />
+              </td>
+              <% }); %>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+
+        <!-- Botón para enviar disponibilidad -->
+        <button type="submit">Enviar Disponibilidad</button>
+      </form>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+      document
+        .getElementById('addUserButton')
+        .addEventListener('click', function () {
+          const form = document.getElementById('availabilityForm');
+          form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        });
+
+      document
+        .getElementById('userAvailabilityForm')
+        .addEventListener('submit', async function (event) {
+          event.preventDefault();
+
+          const username = document.getElementById('username').value.trim();
+          const selectedAvailability = Array.from(
+            document.querySelectorAll('input[name=availability]:checked')
+          ).map((el) => el.value);
+
+          if (!username) {
+            alert('Por favor ingresa tu nombre.');
+            return;
+          }
+
+          if (selectedAvailability.length === 0) {
+            alert(
+              'Por favor selecciona alguna hora en la que tengas disponibilidad'
+            );
+            return;
+          }
+
+          // Enviar disponibilidad al servidor
+          const response = await fetch(window.location.pathname, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username,
+              availability: selectedAvailability,
+            }),
+          });
+
+          if (response.ok) {
+            alert('Disponibilidad añadida exitosamente.');
+            location.reload(); // Recargar página para mostrar las actualizaciones
+          } else {
+            alert('Error al añadir disponibilidad.');
+          }
+        });
+    </script>
+  </body>
+</html>

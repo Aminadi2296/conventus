@@ -9,6 +9,10 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 const URL = process.env.DATABASE_URL;
 
+// Configurar EJS como motor de vistas
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '..', 'views'));
+
 // generar el ID aleatorio
 function generateRandomId(length){
     const characters = 'CONVENTUS1234567890';
@@ -57,48 +61,79 @@ async function connectToDatabase() {
 
         // Route to serve HTML file as main view
         app.get('/', (req, res) => {
-            res.sendFile(path.join(__dirname, '../views', 'index.html')); // Ensure this file exists in your "public" folder
+            res.render('index'); // Ensure this file exists in your "public" folder
         });
 
         app.get('/meetings', (req, res) => {
-            res.sendFile(path.join(__dirname, '../views', 'index.html')); // Ensure this file exists in your "public" folder
+            res.render('meetings'); // Ensure this file exists in your "public" folder
         });
 
-        app.get('/meetings/:id', async (req, res) => {
-            const { id } = req.params; // Obtener el ID desde los parámetros de la solicitud
+        // app.get('/meetings/:id', async (req, res) => {
+        //     const { id } = req.params; // Obtener el ID desde los parámetros de la solicitud
           
-            try {
-              const meeting = await db.collection('meetings').findOne({ id }); // Buscar la reunión por ID
-              if (!meeting) {
-                return res.status(404).send('<h1>Reunión no encontrada</h1>'); // Manejar caso cuando no se encuentra la reunión
-              }
-          
-              // Responder con los detalles de la reunión en HTML
-              res.send(`
-                <!DOCTYPE html>
-                <html lang="es">
-                  <head><title>Detalles de la Reunión</title></head>
-                  <body>
-                    <h1>Detalles de la Reunión</h1>
-                    <p><strong>ID:</strong> ${meeting.id}</p>
-                    <p><strong>Título:</strong> ${meeting.title}</p>
-                    <p><strong>Descripción:</strong> ${meeting.description}</p>
-                    <p><strong>Creada en:</strong> ${new Date(meeting.createdAt).toLocaleString()}</p>
-                    <a href="/">Volver a Página Principal</a> <!-- Enlace para volver al formulario -->
-                  </body>
-                </html>
-              `);
-            } catch (error) {
-              console.error("Error al obtener la reunión:", error);
-              res.status(500).send('<h1>Error al obtener la reunión</h1>');
+        //     try {
+        //       const meeting = await db.collection('meetings').findOne({ id }); // Buscar la reunión por ID
+        //       if (!meeting) {
+        //         return res.status(404).send('<h1>Reunión no encontrada</h1>'); // Manejar caso cuando no se encuentra la reunión
+        //       }
+        //       res.render('meetings', { meeting });
+              
+        //     } catch (error) {
+        //       console.error("Error al obtener la reunión:", error);
+        //       res.status(500).send('<h1>Error al obtener la reunión</h1>');
+        //     }
+        //   });
+
+        app.all('/meetings/:id', async (req, res) => {
+            const { id } = req.params;
+        
+            if (req.method === 'GET') {
+                // Mostrar los detalles de la reunión
+                try {
+                    const meeting = await db.collection('meetings').findOne({ id });
+                    if (!meeting) {
+                        return res.status(404).send('<h1>Reunión no encontrada</h1>');
+                    }
+        
+                    // Renderizar la vista con los detalles de la reunión
+                    return res.render('meetings', { meeting });
+                } catch (error) {
+                    console.error("Error al obtener la reunión:", error);
+                    return res.status(500).send('<h1>Error al obtener la reunión</h1>');
+                }
             }
-          });
-
-
-
-
-
-
+        
+            if (req.method === 'POST') {
+                // Manejar el envío del formulario para añadir disponibilidad
+                const { username, availability } = req.body;
+        
+                if (!username || !availability || availability.length === 0) {
+                    return res.status(400).json({ error: 'Faltan datos requeridos.' });
+                }
+        
+                const availabilityEntry = {
+                    username,
+                    availability,
+                    createdAt: new Date(),
+                };
+        
+                try {
+                    // Actualizar la reunión agregando la nueva propuesta al array proposals
+                    await db.collection('meetings').updateOne(
+                        { id }, // Buscar por ID
+                        { $push: { proposals: availabilityEntry } } // Añadir al array proposals
+                    );
+        
+                    return res.status(200).json({ message: 'Disponibilidad añadida exitosamente.' });
+                } catch (error) {
+                    console.error("Error al añadir disponibilidad:", error);
+                    return res.status(500).json({ error: 'Error al añadir disponibilidad.' });
+                }
+            }
+        
+            // Si no es GET ni POST, devolver un error
+            res.status(405).send('<h1>Método no permitido</h1>');
+        });
 
         // Start server after connecting to MongoDB
         app.listen(PORT, () => {
