@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conventus || Crear Reunión</title>
+  </head>
+  <body>
+    <h1>Crear Reunión</h1>
+
+    <form id="meetingForm">
+      <div>
+        <label for="title">Título:</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          placeholder="Ingrese el título de la reunión"
+          required
+        />
+      </div>
+      <div>
+        <label for="description">Descripción:</label>
+        <textarea
+          id="description"
+          name="description"
+          placeholder="Ingrese la descripción de la reunión"
+          required
+        ></textarea>
+      </div>
+      <button type="submit">Crear Reunión</button>
+    </form>
+
+    <h2>Buscar Reunión por ID</h2>
+    <form id="searchForm">
+      <div>
+        <label for="meetingId">ID de la Reunión:</label>
+        <input
+          type="text"
+          id="meetingId"
+          name="meetingId"
+          placeholder="Ingrese el ID de la reunión"
+          required
+        />
+      </div>
+      <button type="submit">Ir a Reunión</button>
+    </form>
+
+    <script>
+      document
+        .getElementById('meetingForm')
+        .addEventListener('submit', async function (event) {
+          event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+          const title = document.getElementById('title').value;
+          const description = document.getElementById('description').value;
+
+          // Enviar datos al servidor
+          const response = await fetch('/create-meeting', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ title, description }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            alert(`Reunión creada con ID: ${data.meetingId}`);
+            // Limpiar el formulario
+            document.getElementById('meetingForm').reset();
+          } else {
+            alert('Error al crear la reunión');
+          }
+        });
+
+      document
+        .getElementById('searchForm')
+        .addEventListener('submit', function (event) {
+          event.preventDefault();
+
+          const meetingId = document.getElementById('meetingId').value;
+          window.location.href = `/meetings/${meetingId}`;
+        });
+    </script>
+  </body>
+</html>
