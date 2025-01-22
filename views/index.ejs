@@ -31,6 +31,8 @@
       <button type="submit">Crear Reunión</button>
     </form>
 
+    <div id="error-message" style="color: red; display: none"></div>
+
     <h2>Buscar Reunión por ID</h2>
     <form id="searchForm">
       <div>
@@ -55,6 +57,11 @@
           const title = document.getElementById('title').value;
           const description = document.getElementById('description').value;
 
+          // Limpiar cualquier mensaje de error previo
+          const errorMessageDiv = document.getElementById('error-message');
+          errorMessageDiv.style.display = 'none';
+          errorMessageDiv.textContent = '';
+
           // Enviar datos al servidor
           const response = await fetch('/create-meeting', {
             method: 'POST',
@@ -65,12 +72,15 @@
           });
 
           if (response.ok) {
-            const data = await response.json();
-            alert(`Reunión creada con ID: ${data.meetingId}`);
-            // Limpiar el formulario
-            document.getElementById('meetingForm').reset();
+            const data = await response.json(); // Obtener respuesta del servidor
+            if (data.meetingId) {
+              // Redirigir a la URL de la reunión recién creada
+              window.location.href = `/meetings/${data.meetingId}`;
+            } else {
+              console.error('No se recibió meetingId en la respuesta');
+            }
           } else {
-            alert('Error al crear la reunión');
+            console.error('Error al crear la reunión:', response.status);
           }
         });
 
