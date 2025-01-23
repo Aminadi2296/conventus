@@ -11,6 +11,20 @@
     <p><strong>Título:</strong> <%= meeting.title %></p>
     <p><strong>Descripción:</strong> <%= meeting.description %></p>
 
+    <!-- Botón para eliminar la reunión -->
+    <form
+      action="/meetings/<%= meeting.id %>?_method=DELETE"
+      method="POST"
+      style="display: inline"
+    >
+      <button
+        type="submit"
+        onclick="return confirm('¿Estás seguro de que deseas eliminar esta reunión?');"
+      >
+        Eliminar Reunión
+      </button>
+    </form>
+
     <!-- Mostrar propuestas existentes -->
     <h2>Propuestas Actuales</h2>
     <% if (meeting.proposals && meeting.proposals.length > 0) { %>
