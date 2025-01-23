@@ -68,35 +68,39 @@ async function connectToDatabase() {
             res.render('meetings'); // Ensure this file exists in your "public" folder
         });
 
-        // app.get('/meetings/:id', async (req, res) => {
-        //     const { id } = req.params; // Obtener el ID desde los parámetros de la solicitud
-          
-        //     try {
-        //       const meeting = await db.collection('meetings').findOne({ id }); // Buscar la reunión por ID
-        //       if (!meeting) {
-        //         return res.status(404).send('<h1>Reunión no encontrada</h1>'); // Manejar caso cuando no se encuentra la reunión
-        //       }
-        //       res.render('meetings', { meeting });
-              
-        //     } catch (error) {
-        //       console.error("Error al obtener la reunión:", error);
-        //       res.status(500).send('<h1>Error al obtener la reunión</h1>');
-        //     }
-        //   });
-
         app.all('/meetings/:id', async (req, res) => {
             const { id } = req.params;
         
             if (req.method === 'GET') {
                 // Mostrar los detalles de la reunión
                 try {
+
+                    console.log(`Buscando reunión con ID: ${id}`);
                     const meeting = await db.collection('meetings').findOne({ id });
                     if (!meeting) {
                         return res.status(404).send('<h1>Reunión no encontrada</h1>');
                     }
-        
+                    
+                    const availabilityMap = {};
+                    const userCount = meeting.proposals.length;
+
+                    meeting.proposals.forEach(proposal => {
+                        proposal.availability.forEach(time => {
+                            if (!availabilityMap[time]){
+                                availabilityMap[time] = new Set();
+                            }
+                            availabilityMap[time].add(proposal.username)
+
+                        });
+                    });
+
+                    // Filtrar solo aquellas horas con más de un usuario
+                    const commonAvailability = Object.entries(availabilityMap).filter(([time, users]) => users.size === userCount);
+                    const otherAvailability = Object.entries(availabilityMap).filter(([time, users]) => users.size > 1);
+
+
                     // Renderizar la vista con los detalles de la reunión
-                    return res.render('meetings', { meeting });
+                    return res.render('meetings', { meeting, commonAvailability, otherAvailability });
                 } catch (error) {
                     console.error("Error al obtener la reunión:", error);
                     return res.status(500).send('<h1>Error al obtener la reunión</h1>');

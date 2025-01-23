@@ -79,7 +79,34 @@
       </form>
     </div>
 
-    <!-- Scripts -->
+    <h2>Coincidencias en Disponibilidad</h2>
+    <% if (commonAvailability.length > 0) { %>
+    <ul>
+      <% commonAvailability.forEach(([time, users]) => { %>
+      <li><strong><%= time %></strong>: Coincide con todos los usuarios</li>
+      <% }); %>
+    </ul>
+    <% } else { %>
+    <p>No se han encontrado coincidencias entre todos los usuarios.</p>
+    <% if (otherAvailability.length > 0) { %>
+    <button id="showOtherAvailability">Ver Otras Coincidencias</button>
+    <% } else { %>
+    <p>No hay otras coincidencias disponibles.</p>
+    <% } %> <% } %>
+
+    <!-- Mostrar otras coincidencias si se hace clic en el botón -->
+    <div id="otherAvailability" style="display: none">
+      <h3>Otras Coincidencias</h3>
+      <ul>
+        <% otherAvailability.forEach(([time, users]) => { %>
+        <li>
+          <strong><%= time %></strong>: Coincide con <%= users.size %>
+          usuario(s)
+        </li>
+        <% }); %>
+      </ul>
+    </div>
+
     <script>
       document
         .getElementById('addUserButton')
@@ -128,6 +155,14 @@
           } else {
             alert('Error al añadir disponibilidad.');
           }
+        });
+
+      document
+        .getElementById('showOtherAvailability')
+        .addEventListener('click', function () {
+          const otherDiv = document.getElementById('otherAvailability');
+          otherDiv.style.display =
+            otherDiv.style.display === 'none' ? 'block' : 'none';
         });
     </script>
   </body>
