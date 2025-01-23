@@ -77,16 +77,69 @@ async function connectToDatabase() {
                     return res.status(404).send('<h1>Reunión no encontrada</h1>');
                 }
 
-                // Asegúrate de que meeting.proposals sea un arreglo
                 if (!Array.isArray(meeting.proposals)) {
                     meeting.proposals = [];
                 }
 
+                const availabilityMap = {};
+                const userCount = meeting.proposals.length;
+
+                // Construir availabilityMap
+                meeting.proposals.forEach(proposal => {
+                    if (!Array.isArray(proposal.availability)) return;
+
+                    proposal.availability.forEach(time => {
+                        if (!availabilityMap[time]) {
+                            availabilityMap[time] = new Set();
+                        }
+                        availabilityMap[time].add(proposal.username);
+                    });
+                });
+
+                // Calcular commonAvailability y otherAvailability
+                const commonAvailability = Object.entries(availabilityMap)
+                    .filter(([time, users]) => users.size === userCount);
+
+                const otherAvailability = Object.entries(availabilityMap)
+                    .filter(([time, users]) => users.size > 1);
+
                 // Renderizar la vista con los detalles de la reunión
-                return res.render('meetings', { meeting });
+                return res.render('meetings', { 
+                    meeting, 
+                    commonAvailability,  // Pasar commonAvailability a la vista
+                    otherAvailability     // Pasar otherAvailability a la vista
+                });
             } catch (error) {
                 console.error("Error al obtener la reunión:", error);
                 return res.status(500).send('<h1>Error al obtener la reunión</h1>');
+            }
+        });
+
+        app.post('/meetings/:id', async (req, res) => {
+            const { id } = req.params;
+            const { username, availability } = req.body;
+        
+            if (!username || !availability || availability.length === 0) {
+                return res.status(400).json({ error: 'Faltan datos requeridos.' });
+            }
+        
+            const availabilityEntry = {
+                username,
+                availability,
+                createdAt: new Date(),
+            };
+        
+            try {
+                // Actualizar la reunión agregando la nueva propuesta al array proposals
+                await db.collection('meetings').updateOne(
+                    { id }, // Buscar por ID
+                    { $push: { proposals: availabilityEntry } } // Añadir al array proposals
+                );
+        
+                return res.status(200).json({ message: 'Disponibilidad añadida exitosamente.' });
+            } catch (error) {
+                console.error("Error al añadir disponibilidad:", error);
+                return res.status(500).json({ error: 'Error al añadir disponibilidad.' });
             }
         });
 
