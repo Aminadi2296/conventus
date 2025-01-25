@@ -1,0 +1,155 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --dark-purp: #2d3250;
+  --clear-purp: #424669;
+  --juicy-orange: #f8b179;
+}
+
+body {
+  font-family: 'Raleway', serif;
+  background: var(--dark-purp);
+  color: white;
+  /* font-family: raleway; */
+}
+
+/* NAVIGATION BAR */
+nav {
+  display: flex;
+  justify-content: space-between;
+  position: sticky;
+  align-items: center;
+  padding: 1em 3em;
+  border-bottom: 1px solid var(--clear-purp);
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+nav a img {
+  width: 9em;
+}
+
+section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+section > div {
+  padding: 2em 4em;
+  display: flex;
+  justify-content: flex-start;
+  /* border: 2px red solid; */
+  flex-direction: column;
+  height: 100vh;
+  gap: 1.5em;
+}
+
+form > div > input,
+textarea {
+  margin: 0 0 10px 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+form > div > input,
+textarea:active {
+  border: red;
+}
+
+.meeting-img {
+  margin: -6em -10em 0 0;
+  height: 30em;
+}
+
+h1 {
+  font-size: 50px;
+}
+
+p {
+  line-height: 1.5em;
+}
+
+/* FORM */
+
+input,
+textarea {
+  background: var(--clear-purp);
+  padding: 2em;
+  border: none;
+  width: 25em;
+  border-radius: 5px;
+  color: white;
+  font-weight: 700;
+}
+
+input:active {
+  border: red;
+}
+
+button {
+  background: var(--juicy-orange);
+  color: var(--dark-purp);
+  padding: 10px 40px;
+  border: none;
+  border-radius: 5px;
+  font-weight: 800;
+}
+
+button:hover {
+  background: #ff6e70;
+  color: #ffffff;
+  transition: 0.4s;
+}
+
+@media (max-width: 420px) {
+  body {
+    background: #000;
+  }
+
+  h1,
+  h2 {
+    width: 90%;
+  }
+
+  section {
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: 100vw;
+    height: auto;
+    padding: 0;
+  }
+
+  section > div {
+    padding: 2em 3em 0 3em;
+    /* height: 70vh; */
+    width: 100vw;
+    height: min-content;
+  }
+
+  section > div:nth-of-type(2) {
+    padding-bottom: 8em;
+  }
+
+  .meeting-img {
+    margin: -70px 0 0 -10px;
+    width: 20em;
+    padding: 0;
+  }
+
+  p {
+    max-width: 70vw;
+  }
+
+  input,
+  textarea {
+    width: 22em;
+  }
+}

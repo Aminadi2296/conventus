@@ -9,6 +9,9 @@ app.use(express.urlencoded({ extended: true }));
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
 
+app.use(express.static(path.join(__dirname, '..', 'styles')));
+app.use(express.static(path.join(__dirname, '..')));
+
 const PORT = process.env.PORT || 3000;
 const URL = process.env.DATABASE_URL;
 
