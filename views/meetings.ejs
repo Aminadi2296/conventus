@@ -3,121 +3,125 @@
   <%- include('head')%>
   <body>
     <%- include('navbar') %>
-    <section></section>
-    <h1>Detalles de la Reunión</h1>
-    <p><strong>ID:</strong> <%= meeting.id %></p>
-    <p><strong>Título:</strong> <%= meeting.title %></p>
-    <p><strong>Descripción:</strong> <%= meeting.description %></p>
-
-    <!-- Botón para eliminar la reunión -->
-    <form
-      action="/meetings/<%= meeting.id %>?_method=DELETE"
-      method="POST"
-      style="display: inline"
-    >
-      <button
-        type="submit"
-        onclick="return confirm('¿Estás seguro de que deseas eliminar esta reunión?');"
-      >
-        Eliminar Reunión
-      </button>
-    </form>
-
-    <!-- Mostrar propuestas existentes -->
-    <h2>Propuestas Actuales</h2>
-    <% if (meeting.proposals && meeting.proposals.length > 0) { %>
-    <ul>
-      <% meeting.proposals.forEach(proposal => { %>
-      <li>
-        <strong><%= proposal.username %>:</strong>
-        <%= proposal.availability.join(', ') %>
-      </li>
-      <% }); %>
-    </ul>
-    <% } else { %>
-    <p>No hay propuestas aún.</p>
-    <% } %>
-
-    <!-- Botón para mostrar/ocultar formulario -->
-    <button id="addUserButton">Añadir Usuario</button>
-
-    <!-- Formulario para añadir disponibilidad -->
-    <div id="availabilityForm" style="display: none">
-      <h2>Disponibilidad del Usuario</h2>
-      <form id="userAvailabilityForm">
-        <label for="username">Nombre del Usuario:</label>
-        <input
-          type="text"
-          id="username"
-          required
-          placeholder="Ej: José, María, Cornelio"
-        />
-
-        <h3>Selecciona tu disponibilidad:</h3>
-        <table border="1">
-          <thead>
-            <tr>
-              <th>Hora/Día</th>
-              <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado',
-              'Domingo'].forEach(day => { %>
-              <th><%= day %></th>
+    <section>
+      <div class="wrapper">
+        <div class="container">
+          <div>
+            <h1>Detalles de la Reunión</h1>
+            <p><strong>ID:</strong> <%= meeting.id %></p>
+            <p><strong>Título:</strong> <%= meeting.title %></p>
+            <p><strong>Descripción:</strong> <%= meeting.description %></p>
+            <form
+              action="/meetings/<%= meeting.id %>?_method=DELETE"
+              method="POST"
+              style="display: inline"
+            >
+              <button
+                type="submit"
+                onclick="return confirm('¿Estás seguro de que deseas eliminar esta reunión?');"
+              >
+                Eliminar Reunión
+              </button>
+            </form>
+            <h2>Coincidencias en Disponibilidad</h2>
+            <% if (commonAvailability.length > 0) { %>
+            <ul>
+              <% commonAvailability.forEach(([time, users]) => { %>
+              <li>
+                <strong><%= time %></strong>: Coincide con todos los usuarios
+              </li>
               <% }); %>
-            </tr>
-          </thead>
-          <tbody>
-            <% for (let hour = 0; hour < 24; hour++) { %>
-            <tr>
-              <% const formattedHour = hour.toString().padStart(2, '0') + ':00';
-              %>
-              <td><%= formattedHour %></td>
+            </ul>
+            <% } else { %>
+            <p>No se han encontrado coincidencias entre todos los usuarios.</p>
+            <% if (otherAvailability.length > 0) { %>
+            <button id="showOtherAvailability">Ver Otras Coincidencias</button>
+            <% } else { %>
+            <p>No hay otras coincidencias disponibles.</p>
+            <% } %> <% } %>
 
-              <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado',
-              'Domingo'].forEach(day => { %>
-              <td>
-                <input
-                  type="checkbox"
-                  name="availability"
-                  value="<%= day %>-<%= formattedHour %>"
-                />
-              </td>
+            <!-- Mostrar otras coincidencias si se hace clic en el botón -->
+            <div id="otherAvailability" style="display: none">
+              <h3>Otras Coincidencias</h3>
+              <ul>
+                <% otherAvailability.forEach(([time, users]) => { %>
+                <li>
+                  <strong><%= time %></strong>: Coincide con <%= users.size %>
+                  usuario(s)
+                </li>
+                <% }); %>
+              </ul>
+            </div>
+          </div>
+          <div class="proposals">
+            <h2>Propuestas Actuales</h2>
+            <% if (meeting.proposals && meeting.proposals.length > 0) { %>
+            <ul>
+              <% meeting.proposals.forEach(proposal => { %>
+              <li>
+                <strong><%= proposal.username %>:</strong>
+                <%= proposal.availability.join(', ') %>
+              </li>
               <% }); %>
-            </tr>
+            </ul>
+            <% } else { %>
+            <p>No hay propuestas aún.</p>
             <% } %>
-          </tbody>
-        </table>
 
-        <!-- Botón para enviar disponibilidad -->
-        <button type="submit">Enviar Disponibilidad</button>
-      </form>
-    </div>
+            <button id="addUserButton">Añadir Usuario</button>
 
-    <h2>Coincidencias en Disponibilidad</h2>
-    <% if (commonAvailability.length > 0) { %>
-    <ul>
-      <% commonAvailability.forEach(([time, users]) => { %>
-      <li><strong><%= time %></strong>: Coincide con todos los usuarios</li>
-      <% }); %>
-    </ul>
-    <% } else { %>
-    <p>No se han encontrado coincidencias entre todos los usuarios.</p>
-    <% if (otherAvailability.length > 0) { %>
-    <button id="showOtherAvailability">Ver Otras Coincidencias</button>
-    <% } else { %>
-    <p>No hay otras coincidencias disponibles.</p>
-    <% } %> <% } %>
+            <div id="availabilityForm" style="display: none">
+              <h2>Disponibilidad del Usuario</h2>
+              <form id="userAvailabilityForm">
+                <label for="username">Nombre del Usuario:</label>
+                <input
+                  type="text"
+                  id="username"
+                  required
+                  placeholder="Ej: José, María, Cornelio"
+                />
 
-    <!-- Mostrar otras coincidencias si se hace clic en el botón -->
-    <div id="otherAvailability" style="display: none">
-      <h3>Otras Coincidencias</h3>
-      <ul>
-        <% otherAvailability.forEach(([time, users]) => { %>
-        <li>
-          <strong><%= time %></strong>: Coincide con <%= users.size %>
-          usuario(s)
-        </li>
-        <% }); %>
-      </ul>
-    </div>
+                <h3>Selecciona tu disponibilidad:</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Hora/Día</th>
+                      <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes',
+                      'Sábado', 'Domingo'].forEach(day => { %>
+                      <th><%= day %></th>
+                      <% }); %>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for (let hour = 0; hour < 24; hour++) { %>
+                    <tr>
+                      <% const formattedHour = hour.toString().padStart(2, '0')
+                      + ':00'; %>
+                      <td><%= formattedHour %></td>
+
+                      <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes',
+                      'Sábado', 'Domingo'].forEach(day => { %>
+                      <td>
+                        <input
+                          type="checkbox"
+                          name="availability"
+                          value="<%= day %>-<%= formattedHour %>"
+                        />
+                      </td>
+                      <% }); %>
+                    </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+
+                <!-- Botón para enviar disponibilidad -->
+                <button type="submit">Enviar Disponibilidad</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <script>
       document

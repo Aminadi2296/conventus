@@ -16,6 +16,9 @@ body {
   color: white;
   /* font-family: raleway; */
 }
+.wrapper {
+  /* padding: 2em; */
+}
 
 /* NAVIGATION BAR */
 nav {
@@ -38,19 +41,23 @@ nav a img {
   width: 9em;
 }
 
-section {
+.container {
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
 
-section > div {
-  padding: 2em 4em;
+.container > div {
+  padding: 3em;
+  /* border: 2px red solid; */
   display: flex;
   justify-content: flex-start;
-  /* border: 2px red solid; */
   flex-direction: column;
   height: 100vh;
   gap: 1.5em;
+}
+
+.container > div:nth-of-type(2) {
+  padding-left: 3em;
 }
 
 form > div > input,
@@ -65,8 +72,8 @@ textarea:active {
 }
 
 .meeting-img {
-  margin: -6em -10em 0 0;
-  height: 30em;
+  /* margin: -6em -10em 0 0; */
+  width: 25em;
 }
 
 h1 {
@@ -109,9 +116,37 @@ button:hover {
   transition: 0.4s;
 }
 
+.proposals {
+  /* background: black; */
+}
+.proposals ul {
+  list-style: none;
+}
+
+.proposals ul li {
+  padding-bottom: 1em;
+}
+#availabilityForm {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+table {
+  /* background: purple; */
+  width: 80px;
+  padding: 2em;
+}
+
+td > input {
+  width: fit-content;
+}
+
+td > input[type='checkbox'] {
+  height: 20px;
+  width: 80px;
+}
+
 @media (max-width: 420px) {
   body {
-    background: #000;
   }
 
   h1,
@@ -119,7 +154,7 @@ button:hover {
     width: 90%;
   }
 
-  section {
+  .container {
     display: grid;
     grid-template-columns: 1fr;
     max-width: 100vw;
@@ -127,8 +162,8 @@ button:hover {
     padding: 0;
   }
 
-  section > div {
-    padding: 2em 3em 0 3em;
+  .container > div {
+    /* padding: 2em 3em 0 3em; */
     /* height: 70vh; */
     width: 100vw;
     height: min-content;
@@ -151,5 +186,9 @@ button:hover {
   input,
   textarea {
     width: 22em;
+  }
+
+  table {
+    width: 10em;
   }
 }
