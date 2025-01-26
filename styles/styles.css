@@ -8,6 +8,7 @@
   --dark-purp: #2d3250;
   --clear-purp: #424669;
   --juicy-orange: #f8b179;
+  --ori-orange: #eb883d;
 }
 
 body {
@@ -15,9 +16,6 @@ body {
   background: var(--dark-purp);
   color: white;
   /* font-family: raleway; */
-}
-.wrapper {
-  /* padding: 2em; */
 }
 
 /* NAVIGATION BAR */
@@ -74,6 +72,7 @@ textarea:active {
 .meeting-img {
   /* margin: -6em -10em 0 0; */
   width: 25em;
+  position: relative;
 }
 
 h1 {
@@ -111,7 +110,7 @@ button {
 }
 
 button:hover {
-  background: #ff6e70;
+  background: var(--ori-orange);
   color: #ffffff;
   transition: 0.4s;
 }
@@ -174,7 +173,7 @@ td > input[type='checkbox'] {
   }
 
   .meeting-img {
-    margin: -70px 0 0 -10px;
+    margin: -20px 0 0 -10px;
     width: 20em;
     padding: 0;
   }
