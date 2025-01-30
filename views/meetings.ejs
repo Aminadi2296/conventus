@@ -40,7 +40,6 @@
             <p>No hay otras coincidencias disponibles.</p>
             <% } %> <% } %>
 
-            <!-- Mostrar otras coincidencias si se hace clic en el botón -->
             <div id="otherAvailability" style="display: none">
               <h3>Otras Coincidencias</h3>
               <ul>
@@ -59,15 +58,21 @@
             <ul>
               <% meeting.proposals.forEach(proposal => { %>
               <li>
-                <strong><%= proposal.username %>:</strong>
-                <%= proposal.availability.join(', ') %>
+                <strong><%= proposal.username %>:</strong> <br />
+
+                <% const groupedAvailability =
+                proposal.availability.reduce((acc, time) => { const [day, hour]
+                = time.split('-'); if (!acc[day]) { acc[day] = []; }
+                acc[day].push(hour); return acc; }, {});
+                Object.keys(groupedAvailability).forEach(day => { %> <%= day %>
+                <%= groupedAvailability[day].join(', ') %><br />
+                <% }); %>
               </li>
               <% }); %>
             </ul>
             <% } else { %>
             <p>No hay propuestas aún.</p>
             <% } %>
-
             <button id="addUserButton">Añadir Usuario</button>
 
             <div id="availabilityForm" style="display: none">
@@ -101,7 +106,7 @@
 
                       <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes',
                       'Sábado', 'Domingo'].forEach(day => { %>
-                      <td>
+                      <td data-label="<%= day %>">
                         <input
                           type="checkbox"
                           name="availability"
