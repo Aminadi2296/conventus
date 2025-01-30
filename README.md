@@ -1,6 +1,6 @@
 # Conventus
 
-Conventus es una aplicación web diseñada para facilitar la creación y gestión de reuniones. Permite a los usuarios crear reuniones, gestionar su disponibilidad y colaborar de manera eficiente.
+¿Alguna vez has hecho parte de un equipo al cual cuesta definir la disponibilidad para alguna reunión? Conventus es una aplicación web diseñada para facilitar la creación y gestión de reuniones. Permite a los usuarios crear reuniones, añadir usuarios con su disponibilidad, gestionar las coincidencias de disponibilidad del grupo y de esa manera colaborar de manera eficiente.
 
 
 ## Características
