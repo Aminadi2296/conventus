@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
-  <%- include('head')%>
+  <%- include('head') %>
   <body>
     <%- include('navbar') %>
     <section>
       <div class="wrapper">
         <div class="container">
-          <div>
+          <div class="coincidences">
             <h1>Detalles de la Reunión</h1>
             <p><strong>ID:</strong> <%= meeting.id %></p>
             <p><strong>Título:</strong> <%= meeting.title %></p>
@@ -59,7 +59,6 @@
               <% meeting.proposals.forEach(proposal => { %>
               <li>
                 <strong><%= proposal.username %>:</strong> <br />
-
                 <% const groupedAvailability =
                 proposal.availability.reduce((acc, time) => { const [day, hour]
                 = time.split('-'); if (!acc[day]) { acc[day] = []; }
@@ -85,41 +84,126 @@
                   required
                   placeholder="Ej: José, María, Cornelio"
                 />
+                <h3>Disponibilidad en Madrugada:</h3>
 
-                <h3>Selecciona tu disponibilidad:</h3>
-                <table>
+                <!-- Tabla para madrugada -->
+                <table class="availability-table">
                   <thead>
                     <tr>
-                      <th>Hora/Día</th>
-                      <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes',
-                      'Sábado', 'Domingo'].forEach(day => { %>
-                      <th><%= day %></th>
-                      <% }); %>
+                      <th>Día/Hora</th>
+                      <% for (let i = 0; i < 6; i++) { %>
+                      <th><%= i.toString().padStart(2, '0') %>:00</th>
+                      <% }; %>
                     </tr>
                   </thead>
                   <tbody>
-                    <% for (let hour = 0; hour < 24; hour++) { %>
+                    <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes',
+                    'Sábado', 'Domingo'].forEach(day => { %>
                     <tr>
-                      <% const formattedHour = hour.toString().padStart(2, '0')
-                      + ':00'; %>
-                      <td><%= formattedHour %></td>
-
-                      <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes',
-                      'Sábado', 'Domingo'].forEach(day => { %>
-                      <td data-label="<%= day %>">
+                      <td><%= day %></td>
+                      <% for (let i = 0; i < 6; i++) { %>
+                      <td>
                         <input
                           type="checkbox"
-                          name="availability"
-                          value="<%= day %>-<%= formattedHour %>"
+                          name="availability-madrugada"
+                          value="<%= day %>-<%= i.toString().padStart(2, '0') %>:00"
                         />
                       </td>
-                      <% }); %>
+                      <% }; %>
                     </tr>
-                    <% } %>
+                    <% }); %>
                   </tbody>
                 </table>
 
-                <!-- Botón para enviar disponibilidad -->
+                <!-- Repetir el proceso para los otros bloques de tiempo -->
+                <h3>Disponibilidad en Mañana:</h3>
+                <table class="availability-table">
+                  <thead>
+                    <tr>
+                      <th>Día/Hora</th>
+                      <% for (let i = 6; i < 12; i++) { %>
+                      <th><%= i.toString().padStart(2, '0') %>:00</th>
+                      <% }; %>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes',
+                    'Sábado', 'Domingo'].forEach(day => { %>
+                    <tr>
+                      <td><%= day %></td>
+                      <% for (let i = 6; i < 12; i++) { %>
+                      <td>
+                        <input
+                          type="checkbox"
+                          name="availability-mañana"
+                          value="<%= day %>-<%= i.toString().padStart(2, '0') %>:00"
+                        />
+                      </td>
+                      <% }; %>
+                    </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+
+                <!-- Repetir para tarde y noche -->
+                <h3>Disponibilidad en Tarde:</h3>
+                <table class="availability-table">
+                  <thead>
+                    <tr>
+                      <th>Día/Hora</th>
+                      <% for (let i = 12; i < 18; i++) { %>
+                      <th><%= i.toString().padStart(2, '0') %>:00</th>
+                      <% }; %>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes',
+                    'Sábado', 'Domingo'].forEach(day => { %>
+                    <tr>
+                      <td><%= day %></td>
+                      <% for (let i = 12; i < 18; i++) { %>
+                      <td>
+                        <input
+                          type="checkbox"
+                          name="availability-tarde"
+                          value="<%= day %>-<%= i.toString().padStart(2, '0') %>:00"
+                        />
+                      </td>
+                      <% }; %>
+                    </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+
+                <h3>Disponibilidad en Noche:</h3>
+                <table class="availability-table">
+                  <thead>
+                    <tr>
+                      <th>Día/Hora</th>
+                      <% for (let i = 18; i < 24; i++) { %>
+                      <th><%= i.toString().padStart(2, '0') %>:00</th>
+                      <% }; %>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes',
+                    'Sábado', 'Domingo'].forEach(day => { %>
+                    <tr>
+                      <td><%= day %></td>
+                      <% for (let i = 18; i < 24; i++) { %>
+                      <td>
+                        <input
+                          type="checkbox"
+                          name="availability-noche"
+                          value="<%= day %>-<%= i.toString().padStart(2, '0') %>:00"
+                        />
+                      </td>
+                      <% }; %>
+                    </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+
                 <button type="submit">Enviar Disponibilidad</button>
               </form>
             </div>
