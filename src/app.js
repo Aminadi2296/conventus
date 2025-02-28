@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
+app.use(express.urlencoded({ extended: true }));
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
 
@@ -36,6 +36,49 @@ async function connectToDatabase() {
 
         const dbName = client.db().databaseName;
         const db = client.db(dbName);
+
+        // Middleware para registrar visitas
+        app.use(async (req, res, next) => {
+            const ip = req.ip;
+            const userAgent = req.get('User-Agent');
+
+            // Guardar la visita en la colección "visitas"
+            await db.collection('visitas').insertOne({
+                fecha: new Date(),
+                ip,
+                userAgent,
+            });
+
+            next();
+        });
+
+        // Ruta para ver estadísticas
+        app.get('/admin/estadisticas', async (req, res) => {
+            try {
+                // Contar el total de visitas
+                const totalVisitas = await db.collection('visitas').countDocuments();
+
+                // Contar dispositivos únicos (basados en IP y userAgent)
+                const dispositivosUnicos = await db.collection('visitas').aggregate([
+                    {
+                        $group: {
+                            _id: { ip: '$ip', userAgent: '$userAgent' },
+                        },
+                    },
+                    {
+                        $count: 'dispositivosUnicos',
+                    },
+                ]).toArray();
+
+                res.json({
+                    totalVisitas,
+                    dispositivosUnicos: dispositivosUnicos[0]?.dispositivosUnicos || 0,
+                });
+            } catch (error) {
+                console.error("Error al obtener estadísticas:", error);
+                res.status(500).json({ error: 'Error al obtener estadísticas' });
+            }
+        });
 
         // Ruta para crear una reunión
         app.post('/create-meeting', async (req, res) => {
