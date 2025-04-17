@@ -65,7 +65,7 @@ textarea:active {
 .meeting-img {
   width: 22em;
   position: relative;
-  margin: -20px 0 0 -80px;
+  margin: -20px 0 0 110px;
   left: 3em;
 }
 
@@ -206,6 +206,10 @@ td > input[type='checkbox'] {
     width: 100%;
     overflow-x: auto;
     font-size: 14px;
+  }
+
+  .meeting-img {
+    margin: -20px 0 0 -60px;
   }
 
   .availability-table th,
