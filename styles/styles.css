@@ -48,6 +48,7 @@ nav a img {
   display: flex;
   flex-direction: column;
   gap: 1.5em;
+  padding: 1.5em 2em;
 }
 
 form > div > input,
@@ -89,7 +90,7 @@ textarea {
   background: var(--clear-purp);
   padding: 1em;
   border: none;
-  width: 100%;
+  width: 30em;
   border-radius: 5px;
   color: white;
   font-weight: 700;
@@ -201,7 +202,9 @@ td > input[type='checkbox'] {
 @media (max-width: 768px) {
   .container {
     grid-template-columns: 1fr;
+    padding: 0em 3em;
   }
+
   .availability-table {
     width: 100%;
     overflow-x: auto;
@@ -209,7 +212,7 @@ td > input[type='checkbox'] {
   }
 
   .meeting-img {
-    margin: -20px 0 0 -60px;
+    margin: -10px 0 0 -40px;
   }
 
   .availability-table th,
