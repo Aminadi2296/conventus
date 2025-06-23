@@ -223,7 +223,7 @@
 
           const username = document.getElementById('username').value.trim();
           const selectedAvailability = Array.from(
-            document.querySelectorAll('input[name=availability]:checked')
+            document.querySelectorAll('input[type=checkbox]:checked')
           ).map((el) => el.value);
 
           if (!username) {
