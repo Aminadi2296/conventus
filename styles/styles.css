@@ -15,6 +15,7 @@ body {
   font-family: 'Raleway', serif;
   background: var(--dark-purp);
   color: white;
+  overflow-x: hidden;
 }
 
 nav {
@@ -48,7 +49,7 @@ nav a img {
   display: flex;
   flex-direction: column;
   gap: 1.5em;
-  padding: 1.5em 2em;
+  padding: 1.5em 0;
 }
 
 form > div > input,
@@ -64,7 +65,7 @@ textarea:active {
 }
 
 .meeting-img {
-  width: 22em;
+  width: 20em;
   position: relative;
   margin: -20px 0 0 110px;
   left: 3em;
@@ -253,7 +254,7 @@ td > input[type='checkbox'] {
 }
 
 .share-btn {
-  background-color: var(--juicy-orange); /* un verde agradable */
+  background-color: var(--juicy-orange);/* un verde agradable */
   color: white;
   border: none;
   padding: 10px 18px;
@@ -273,8 +274,15 @@ td > input[type='checkbox'] {
 @media (max-width: 768px) {
   .container {
     grid-template-columns: 1fr;
-    padding: 0em 3em;
+    padding: 2em 2em;
   }
+
+  .container > div {
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 0em;
+  }
+  
 
   .availability-table {
     width: 100%;
@@ -282,9 +290,35 @@ td > input[type='checkbox'] {
     font-size: 14px;
   }
 
-  .meeting-img {
-    margin: -10px 0 0 -40px;
-  }
+  
+h1, h2 {
+  font-size: 2em;
+}
+
+input[type="number"],
+input[type="text"], input[type="textarea"], #description{
+  width: 100%; /* ancho más pequeño, ajusta al tamaño deseado */
+  max-width: 24em;
+  height: 3em;
+  font-size: 14px; /* tamaño de texto más pequeño */
+  padding: 4px 8px; /* menos padding para que se vea más compacto */
+}
+#description{
+  height: 8em;
+}
+
+p {
+  line-height: 1.5em;
+  width: 80%;
+}
+
+.meeting-img {
+  position: relative;
+  width: 100%;
+  max-width: 19em;
+  margin: 0 auto;
+  left: 0;
+}
 
   .availability-table th,
   .availability-table td {
@@ -302,4 +336,12 @@ td > input[type='checkbox'] {
     accent-color: var(--juicy-orange);
     margin: 0 auto; /* Center the checkbox */
   }
+
+  input,
+textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 }
