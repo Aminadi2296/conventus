@@ -162,10 +162,113 @@ button:active {
   margin: 1em 0;
 }
 
-table {
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin: 20px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.availability-table {
   width: 100%;
   border-collapse: collapse;
+  margin: 0;
+  max-width: 100%;
+  table-layout: fixed;
+}
+
+.availability-table {
   margin: 20px 0;
+}
+
+.availability-table th,
+.availability-table td {
+  padding: 6px 8px;
+  font-size: 0.85em;
+  text-align: center;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+}
+
+.availability-table th {
+  background-color: var(--clear-purp);
+  color: white;
+  font-weight: bold;
+  vertical-align: middle;
+  font-size: 0.9em;
+}
+
+.availability-table td {
+  width: 1%;
+  min-width: 45px;
+  vertical-align: middle;
+}
+
+.availability-table th:first-child,
+.availability-table td:first-child {
+  width: auto;
+  min-width: 45px;
+  white-space: nowrap;
+  text-align: center;
+  padding: 8px 10px;
+  color: var(--ori-orange);
+}
+
+.availability-table th:first-child {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.availability-table td:first-child {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.availability-table th:not(:first-child) {
+  font-size: 0.8em;
+  padding: 4px 6px;
+}
+
+@media screen and (max-width: 768px) {
+  .availability-table th,
+  .availability-table td {
+    padding: 4px 6px;
+    font-size: 0.8em;
+  }
+  
+  .availability-table td {
+    min-width: 35px;
+  }
+  
+  .availability-table th:first-child,
+  .availability-table td:first-child {
+    min-width: 40px;
+    padding: 6px 8px;
+    font-size: 0.9em;
+  }
+  
+  .availability-table th:not(:first-child) {
+    font-size: 0.75em;
+    padding: 3px 5px;
+  }
+}
+
+#userAvailabilityForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+#userAvailabilityForm h3 {
+  margin: 10px 0;
+  padding-left: 10px;
+  border-left: 3px solid var(--juicy-orange);
+}
+
+#userAvailabilityForm button[type="submit"] {
+  margin-top: 20px;
+  align-self: flex-end;
 }
 
 th,
