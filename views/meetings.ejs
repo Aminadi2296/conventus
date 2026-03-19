@@ -104,7 +104,7 @@
                 = time.split('-'); if (!acc[day]) { acc[day] = []; }
                 acc[day].push(hour); return acc; }, {});
                 Object.keys(groupedAvailability).forEach(day => { %> <%= day %>
-                <%= groupedAvailability[day].join(', ') %><br />
+                <%= groupAvailability(groupedAvailability[day]).join(', ') %><br />
                 <% }); %>
               </li>
               <% }); %>

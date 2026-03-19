@@ -8,6 +8,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
+const groupAvailability = require('../utils/availability');
 
 app.use(express.static(path.join(__dirname, '..', 'styles')));
 app.use(express.static(path.join(__dirname, '..')));
@@ -15,11 +16,9 @@ app.use(express.static(path.join(__dirname, '..')));
 const PORT = process.env.PORT || 3000;
 const URL = process.env.DATABASE_URL;
 
-// Configurar EJS como motor de vistas
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', 'views'));
 
-// Función para generar un ID aleatorio
 function generateRandomId(length) {
     const characters = 'CONVENTUS1234567890';
     let result = '';
@@ -149,11 +148,11 @@ async function connectToDatabase() {
                 const otherAvailability = Object.entries(availabilityMap)
                     .filter(([time, users]) => users.size > 1);
 
-                // Renderizar la vista con los detalles de la reunión
                 return res.render('meetings', { 
                     meeting, 
-                    commonAvailability,  // Pasar commonAvailability a la vista
-                    otherAvailability     // Pasar otherAvailability a la vista
+                    commonAvailability,  
+                    otherAvailability,
+                    groupAvailability   
                 });
             } catch (error) {
                 console.error("Error al obtener la reunión:", error);
