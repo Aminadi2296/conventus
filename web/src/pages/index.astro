@@ -1,0 +1,552 @@
+---
+import Base from '../layouts/Base.astro';
+import Navbar from '../components/Navbar.astro';
+
+// Handle form submission server-side
+if (Astro.request.method === 'POST') {
+  const data = await Astro.request.formData();
+  const action = data.get('action') as string;
+
+  if (action === 'create') {
+    const title = data.get('title') as string;
+    const description = data.get('description') as string;
+
+    try {
+      const res = await fetch(`${import.meta.env.PUBLIC_API_URL}/api/meetings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description }),
+      });
+
+      if (res.ok) {
+        const { meetingId } = await res.json();
+        return Astro.redirect(`/meetings/${meetingId}`);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  if (action === 'find') {
+    const meetingId = (data.get('meetingId') as string)?.trim().toUpperCase();
+    if (meetingId) {
+      return Astro.redirect(`/meetings/${meetingId}`);
+    }
+  }
+}
+---
+
+<Base title="Schedule a Meeting">
+  <Navbar />
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-content">
+        <div class="eyebrow" style="animation-delay: 0ms">
+          <span class="dot"></span>
+          No signups. No friction.
+        </div>
+        <h1 class="hero-title" style="animation-delay: 80ms">
+          Find the time<br /><em>everyone</em> can meet.
+        </h1>
+        <p class="hero-sub" style="animation-delay: 160ms">
+          Create a meeting, share the link, let your team mark their availability — Conventus finds the overlap instantly.
+        </p>
+      </div>
+
+      <div class="hero-visual" style="animation-delay: 240ms">
+        <!-- Decorative availability grid -->
+        <div class="preview-card">
+          <div class="preview-header">
+            <span class="preview-title">Team Sync Q3</span>
+            <span class="preview-count">4 participants</span>
+          </div>
+          <div class="preview-grid">
+            {['Mo', 'Tu', 'We', 'Th', 'Fr'].map((day) => (
+              <div class="preview-col">
+                <span class="preview-day">{day}</span>
+                {[0,1,2,3,4,5].map((i) => {
+                  const filled = Math.random() > 0.45;
+                  const hot = Math.random() > 0.75 && filled;
+                  return (
+                    <div class={`preview-cell ${filled ? 'filled' : ''} ${hot ? 'hot' : ''}`}></div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+          <div class="preview-match">
+            <span class="match-icon">✦</span>
+            Best slot: <strong>Wednesday 10:00</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Forms -->
+    <section class="forms-section">
+      <div class="forms-grid">
+
+        <!-- Create -->
+        <div class="form-card" style="animation-delay: 100ms">
+          <div class="form-header">
+            <span class="form-number">01</span>
+            <h2>Create a meeting</h2>
+            <p>Give it a name and share the link with your team.</p>
+          </div>
+
+          <form method="POST" class="form">
+            <input type="hidden" name="action" value="create" />
+            <div class="field">
+              <label for="title">Meeting title</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                placeholder="e.g. Team Sync, Sprint Planning…"
+                required
+                autocomplete="off"
+              />
+            </div>
+            <div class="field">
+              <label for="description">Description <span class="optional">(optional)</span></label>
+              <textarea
+                id="description"
+                name="description"
+                rows="3"
+                placeholder="What's this meeting about?"
+              ></textarea>
+            </div>
+            <button type="submit" class="btn-primary">
+              Create meeting
+              <span class="btn-arrow">→</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Find -->
+        <div class="form-card form-card--secondary" style="animation-delay: 200ms">
+          <div class="form-header">
+            <span class="form-number">02</span>
+            <h2>Join a meeting</h2>
+            <p>Already have a meeting ID? Jump straight in.</p>
+          </div>
+
+          <form method="POST" class="form">
+            <input type="hidden" name="action" value="find" />
+            <div class="field">
+              <label for="meetingId">Meeting ID</label>
+              <input
+                type="text"
+                id="meetingId"
+                name="meetingId"
+                placeholder="e.g. C0NV3N"
+                required
+                autocomplete="off"
+                style="text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;"
+              />
+            </div>
+            <button type="submit" class="btn-secondary">
+              Go to meeting
+              <span class="btn-arrow">→</span>
+            </button>
+          </form>
+
+          <div class="how-it-works">
+            <h3>How it works</h3>
+            <ol>
+              <li><strong>Create</strong> a meeting and copy the link</li>
+              <li><strong>Share</strong> it with everyone who needs to attend</li>
+              <li><strong>Each person</strong> marks their available times</li>
+              <li><strong>Conventus</strong> highlights the overlaps</li>
+            </ol>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Built with ♥ by Moroni Perez</p>
+  </footer>
+</Base>
+
+<style>
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* Hero */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    padding: 5rem 0 4rem;
+  }
+
+  .hero-content > * {
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--amber-dark);
+    letter-spacing: 0.04em;
+    margin-bottom: 1.25rem;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--amber);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .hero-title {
+    font-size: clamp(2.8rem, 5vw, 4rem);
+    color: var(--ink);
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--amber-dark);
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--ink-faint);
+    max-width: 38ch;
+  }
+
+  /* Preview card */
+  .hero-visual {
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards;
+  }
+
+  .preview-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 40px rgba(14,14,16,0.07);
+  }
+
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1.25rem;
+  }
+
+  .preview-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+
+  .preview-count {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+  }
+
+  .preview-grid {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 1.25rem;
+  }
+
+  .preview-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .preview-day {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  .preview-cell {
+    width: 100%;
+    height: 26px;
+    border-radius: 5px;
+    background: var(--border);
+    transition: background 0.2s;
+  }
+
+  .preview-cell.filled {
+    background: rgba(232, 160, 32, 0.2);
+  }
+
+  .preview-cell.hot {
+    background: var(--amber);
+  }
+
+  .preview-match {
+    font-size: 0.875rem;
+    color: var(--ink-faint);
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .match-icon {
+    color: var(--amber);
+  }
+
+  .preview-match strong {
+    color: var(--ink);
+  }
+
+  /* Forms section */
+  .forms-section {
+    padding: 2rem 0 5rem;
+  }
+
+  .forms-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .form-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards;
+  }
+
+  .form-card--secondary {
+    background: var(--cream);
+  }
+
+  .form-number {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--amber-dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .form-header h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.4rem;
+    color: var(--ink);
+  }
+
+  .form-header p {
+    font-size: 0.9rem;
+    color: var(--ink-faint);
+    margin-bottom: 1.75rem;
+    line-height: 1.5;
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .field label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--ink-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .optional {
+    font-weight: 400;
+    color: var(--ink-faint);
+  }
+
+  .field input,
+  .field textarea {
+    padding: 0.7rem 0.875rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--cream-soft);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: vertical;
+  }
+
+  .field input:focus,
+  .field textarea:focus {
+    border-color: var(--amber);
+    box-shadow: 0 0 0 3px rgba(232, 160, 32, 0.15);
+  }
+
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: var(--ink-faint);
+    opacity: 0.7;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.25rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+    margin-top: 0.25rem;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--cream);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(14,14,16,0.2);
+  }
+
+  .btn-secondary {
+    background: var(--amber);
+    color: var(--ink);
+  }
+
+  .btn-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(232,160,32,0.35);
+  }
+
+  .btn-arrow {
+    font-size: 1.1rem;
+    transition: transform 0.2s;
+  }
+
+  .btn-primary:hover .btn-arrow,
+  .btn-secondary:hover .btn-arrow {
+    transform: translateX(3px);
+  }
+
+  /* How it works */
+  .how-it-works {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .how-it-works h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    margin-bottom: 1rem;
+  }
+
+  .how-it-works ol {
+    list-style: none;
+    counter-reset: steps;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .how-it-works ol li {
+    counter-increment: steps;
+    font-size: 0.88rem;
+    color: var(--ink-muted);
+    line-height: 1.5;
+    padding-left: 1.75rem;
+    position: relative;
+  }
+
+  .how-it-works ol li::before {
+    content: counter(steps);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--amber-dark);
+    background: var(--amber-pale);
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .how-it-works strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    border-top: 1px solid var(--border);
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero {
+      grid-template-columns: 1fr;
+      padding: 3rem 0 2rem;
+      gap: 2.5rem;
+    }
+
+    .hero-visual {
+      order: -1;
+    }
+
+    .forms-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

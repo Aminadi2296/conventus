@@ -1,0 +1,77 @@
+---
+interface Props {
+  meetingId?: string;
+}
+const { meetingId } = Astro.props;
+---
+
+<nav class="nav">
+  <a href="/" class="logo" aria-label="Conventus home">
+    <span class="logo-mark">C</span>
+    <span class="logo-text">onventus</span>
+  </a>
+
+  {meetingId && (
+    <div class="meeting-badge">
+      <span class="badge-label">Meeting</span>
+      <code class="badge-id">{meetingId}</code>
+    </div>
+  )}
+</nav>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background: rgba(245, 240, 232, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    text-decoration: none;
+    color: var(--ink);
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+  }
+
+  .logo-mark {
+    color: var(--amber);
+    font-size: 1.6rem;
+  }
+
+  .meeting-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    background: var(--amber-pale);
+    border: 1px solid rgba(232, 160, 32, 0.25);
+    border-radius: 999px;
+  }
+
+  .badge-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--amber-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-id {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink);
+    font-family: 'DM Mono', 'Courier New', monospace;
+    letter-spacing: 0.08em;
+  }
+</style>

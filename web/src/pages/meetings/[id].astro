@@ -1,0 +1,675 @@
+---
+import Base from '../../layouts/Base.astro';
+import Navbar from '../../components/Navbar.astro';
+import AvailabilityGrid from '../../components/AvailabilityGrid.tsx';
+import type { MeetingDetail } from '../../lib/api';
+
+const { id } = Astro.params;
+
+let data: MeetingDetail | null = null;
+let notFound = false;
+
+try {
+  const res = await fetch(`${import.meta.env.PUBLIC_API_URL}/api/meetings/${id}`);
+  if (res.status === 404) {
+    notFound = true;
+  } else if (res.ok) {
+    data = await res.json();
+  }
+} catch (e) {
+  notFound = true;
+}
+
+const apiUrl = import.meta.env.PUBLIC_API_URL;
+---
+
+<Base title={data ? data.meeting.title : 'Meeting not found'}>
+  <Navbar meetingId={id} />
+
+  {notFound ? (
+    <main class="not-found">
+      <h1>Meeting not found</h1>
+      <p>The meeting ID <code>{id}</code> doesn't exist or has been deleted.</p>
+      <a href="/" class="back-link">← Back to home</a>
+    </main>
+  ) : data && (
+    <main class="meeting-page">
+
+      <!-- Meeting header -->
+      <section class="meeting-hero">
+        <div class="meeting-hero-inner">
+          <div class="meeting-meta">
+            <div class="meta-row">
+              <span class="meeting-id-badge">{data.meeting.id}</span>
+              <span class="participants-count">
+                {data.proposals.length} participant{data.proposals.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+            <h1 class="meeting-title">{data.meeting.title}</h1>
+            {data.meeting.description && (
+              <p class="meeting-description">{data.meeting.description}</p>
+            )}
+          </div>
+
+          <div class="meeting-actions">
+            <button class="btn-share" id="shareBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+              </svg>
+              Share
+            </button>
+            <button class="btn-delete" id="deleteBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/><path d="M10,11v6"/><path d="M14,11v6"/><path d="M9,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1V6"/>
+              </svg>
+              Delete
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div class="meeting-body">
+
+        <!-- Left column: coincidences + proposals -->
+        <div class="left-col">
+
+          <!-- Common availability -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-icon">✦</span>
+              <h2>Best times</h2>
+            </div>
+
+            {data.commonAvailability.length > 0 ? (
+              <ul class="slot-list">
+                {data.commonAvailability.map(slot => {
+                  const [day, time] = slot.time.split('-');
+                  return (
+                    <li class="slot-item slot-item--best">
+                      <div class="slot-time">
+                        <span class="slot-day">{day}</span>
+                        <span class="slot-hour">{time}</span>
+                      </div>
+                      <span class="slot-badge">All {slot.users.length}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : data.proposals.length < 2 ? (
+              <p class="empty-state">Add at least 2 participants to see overlaps.</p>
+            ) : (
+              <p class="empty-state">No common slot found yet.</p>
+            )}
+
+            {data.otherAvailability.length > 0 && (
+              <details class="other-slots">
+                <summary>More overlaps ({data.otherAvailability.length})</summary>
+                <ul class="slot-list slot-list--other">
+                  {data.otherAvailability.map(slot => {
+                    const [day, time] = slot.time.split('-');
+                    return (
+                      <li class="slot-item">
+                        <div class="slot-time">
+                          <span class="slot-day">{day}</span>
+                          <span class="slot-hour">{time}</span>
+                        </div>
+                        <span class="slot-badge slot-badge--muted">{slot.count} people</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </details>
+            )}
+          </div>
+
+          <!-- Current proposals -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-icon">👥</span>
+              <h2>Participants</h2>
+            </div>
+
+            {data.proposals.length === 0 ? (
+              <p class="empty-state">No one has added their availability yet.</p>
+            ) : (
+              <ul class="proposal-list">
+                {data.proposals.map(p => (
+                  <li class="proposal-item">
+                    <div class="proposal-avatar">
+                      {p.username.charAt(0).toUpperCase()}
+                    </div>
+                    <div class="proposal-detail">
+                      <strong>{p.username}</strong>
+                      <span>
+                        {p.groupedAvailability.map(g =>
+                          `${g.day}: ${g.ranges.join(', ')}`
+                        ).join(' · ')}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+        </div>
+
+        <!-- Right column: add availability -->
+        <div class="right-col">
+          <div class="card card--sticky">
+            <div class="card-header">
+              <span class="card-icon">📅</span>
+              <h2>Add your availability</h2>
+            </div>
+            <AvailabilityGrid
+              client:load
+              meetingId={id!}
+              apiUrl={apiUrl}
+              onSubmitSuccess={() => window.location.reload()}
+            />
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  )}
+</Base>
+
+<!-- Share modal -->
+<div id="shareModal" class="modal-backdrop" style="display:none">
+  <div class="modal">
+    <button class="modal-close" id="closeModal">×</button>
+    <h3>Share this meeting</h3>
+    <p>Send this link to your team:</p>
+    <div class="share-url-row">
+      <code id="shareUrl" class="share-url"></code>
+      <button class="btn-copy" id="copyBtn">Copy</button>
+    </div>
+    <div class="share-buttons">
+      <a id="whatsappLink" href="#" target="_blank" class="share-btn share-btn--wa">
+        WhatsApp
+      </a>
+      <a id="emailLink" href="#" class="share-btn share-btn--email">
+        Email
+      </a>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ meetingId: id, apiUrl }}>
+  // Share modal
+  const shareBtn = document.getElementById('shareBtn');
+  const modal = document.getElementById('shareModal');
+  const closeModal = document.getElementById('closeModal');
+  const shareUrl = document.getElementById('shareUrl');
+  const copyBtn = document.getElementById('copyBtn');
+  const whatsappLink = document.getElementById('whatsappLink');
+  const emailLink = document.getElementById('emailLink');
+
+  const url = window.location.href;
+
+  if (shareUrl) shareUrl.textContent = url;
+  if (whatsappLink) whatsappLink.href = `https://wa.me/?text=${encodeURIComponent('Join my meeting! ' + url)}`;
+  if (emailLink) emailLink.href = `mailto:?subject=Meeting invitation&body=Join here: ${url}`;
+
+  shareBtn?.addEventListener('click', () => { if (modal) modal.style.display = 'flex'; });
+  closeModal?.addEventListener('click', () => { if (modal) modal.style.display = 'none'; });
+  modal?.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+  copyBtn?.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(url);
+    if (copyBtn) { copyBtn.textContent = 'Copied!'; setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000); }
+  });
+
+  // Delete meeting
+  const deleteBtn = document.getElementById('deleteBtn');
+  deleteBtn?.addEventListener('click', async () => {
+    if (!confirm('Delete this meeting? This cannot be undone.')) return;
+    const res = await fetch(`${apiUrl}/api/meetings/${meetingId}`, { method: 'DELETE' });
+    if (res.ok) window.location.href = '/';
+    else alert('Failed to delete meeting.');
+  });
+</script>
+
+<style>
+  .meeting-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+  }
+
+  /* Hero */
+  .meeting-hero {
+    padding: 2.5rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .meeting-hero-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .meeting-id-badge {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--amber-dark);
+    background: var(--amber-pale);
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid rgba(232, 160, 32, 0.2);
+  }
+
+  .participants-count {
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+  }
+
+  .meeting-title {
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .meeting-description {
+    font-size: 0.95rem;
+    color: var(--ink-faint);
+    line-height: 1.6;
+    max-width: 55ch;
+  }
+
+  .meeting-actions {
+    display: flex;
+    gap: 0.6rem;
+    flex-shrink: 0;
+  }
+
+  .btn-share, .btn-delete {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-share {
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+  }
+
+  .btn-share:hover { opacity: 0.85; }
+
+  .btn-delete {
+    background: none;
+    color: #dc2626;
+    border: 1px solid rgba(220, 38, 38, 0.25);
+  }
+
+  .btn-delete:hover {
+    background: rgba(220, 38, 38, 0.06);
+    border-color: rgba(220, 38, 38, 0.5);
+  }
+
+  /* Body layout */
+  .meeting-body {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease forwards;
+    opacity: 0;
+  }
+
+  .right-col {
+    animation: fadeUp 0.6s 0.2s ease forwards;
+    opacity: 0;
+  }
+
+  /* Cards */
+  .card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+
+  .card--sticky {
+    position: sticky;
+    top: 80px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .card-icon {
+    font-size: 1rem;
+  }
+
+  .card-header h2 {
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+
+  /* Slots */
+  .slot-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .slot-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0.875rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--cream-soft);
+  }
+
+  .slot-item--best {
+    background: var(--amber-pale);
+    border-color: rgba(232, 160, 32, 0.25);
+  }
+
+  .slot-time {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .slot-day {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .slot-hour {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ink);
+    font-family: 'Courier New', monospace;
+  }
+
+  .slot-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--amber-dark);
+    background: rgba(232, 160, 32, 0.15);
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+  }
+
+  .slot-badge--muted {
+    color: var(--ink-faint);
+    background: var(--border);
+  }
+
+  /* Other slots */
+  .other-slots {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .other-slots summary {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ink-faint);
+    cursor: pointer;
+    list-style: none;
+    margin-bottom: 0.75rem;
+  }
+
+  .other-slots summary:hover { color: var(--ink-muted); }
+
+  .slot-list--other { gap: 0.4rem; }
+
+  /* Proposals */
+  .proposal-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .proposal-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+  }
+
+  .proposal-avatar {
+    width: 36px;
+    height: 36px;
+    background: var(--amber-pale);
+    border: 1px solid rgba(232, 160, 32, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--amber-dark);
+    flex-shrink: 0;
+  }
+
+  .proposal-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .proposal-detail strong {
+    font-size: 0.9rem;
+    color: var(--ink);
+  }
+
+  .proposal-detail span {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    line-height: 1.5;
+  }
+
+  /* Empty state */
+  .empty-state {
+    font-size: 0.88rem;
+    color: var(--ink-faint);
+    font-style: italic;
+    padding: 0.5rem 0;
+  }
+
+  /* Not found */
+  .not-found {
+    max-width: 480px;
+    margin: 6rem auto;
+    padding: 0 1.5rem;
+    text-align: center;
+  }
+
+  .not-found h1 {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .not-found p {
+    color: var(--ink-faint);
+    margin-bottom: 1.5rem;
+  }
+
+  .not-found code {
+    font-family: monospace;
+    background: var(--cream);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+  }
+
+  .back-link {
+    color: var(--amber-dark);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .back-link:hover { text-decoration: underline; }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(14,14,16,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 420px;
+    position: relative;
+  }
+
+  .modal h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .modal p {
+    font-size: 0.88rem;
+    color: var(--ink-faint);
+    margin-bottom: 1rem;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--ink-faint);
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .share-url-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.875rem;
+    background: var(--cream-soft);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .share-url {
+    flex: 1;
+    font-size: 0.78rem;
+    font-family: monospace;
+    color: var(--ink-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .btn-copy {
+    padding: 0.3rem 0.75rem;
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .share-buttons {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .share-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .share-btn--wa {
+    background: #25D366;
+    color: white;
+  }
+
+  .share-btn--email {
+    background: var(--cream);
+    color: var(--ink);
+    border: 1px solid var(--border-strong);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 900px) {
+    .meeting-body {
+      grid-template-columns: 1fr;
+    }
+
+    .card--sticky {
+      position: static;
+    }
+
+    .right-col {
+      order: -1;
+    }
+  }
+</style>
