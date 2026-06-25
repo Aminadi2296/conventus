@@ -1,4 +1,14 @@
-const API_URL = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
+const DEV_API_URL = 'http://localhost:3000';
+const PROD_API_URL = 'https://conventus-9q9k.onrender.com';
+
+/** Backend base URL without trailing slash. Set via .env.development / .env.production. */
+export function getApiUrl(): string {
+  const raw = import.meta.env.PUBLIC_API_URL?.trim();
+  if (raw) return raw.replace(/\/$/, '');
+  return import.meta.env.DEV ? DEV_API_URL : PROD_API_URL;
+}
+
+const API_URL = getApiUrl();
 
 export interface Meeting {
   id: string;

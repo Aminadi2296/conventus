@@ -2,7 +2,9 @@
 import Base from '../../layouts/Base.astro';
 import Navbar from '../../components/Navbar.astro';
 import AvailabilityGrid from '../../components/AvailabilityGrid.tsx';
-import type { MeetingDetail } from '../../lib/api';
+import { getApiUrl, type MeetingDetail } from '../../lib/api';
+
+const apiUrl = getApiUrl();
 
 const { id } = Astro.params;
 
@@ -10,7 +12,7 @@ let data: MeetingDetail | null = null;
 let notFound = false;
 
 try {
-  const res = await fetch(`${import.meta.env.PUBLIC_API_URL}/api/meetings/${id}`);
+  const res = await fetch(`${apiUrl}/api/meetings/${id}`);
   if (res.status === 404) {
     notFound = true;
   } else if (res.ok) {
@@ -20,7 +22,6 @@ try {
   notFound = true;
 }
 
-const apiUrl = import.meta.env.PUBLIC_API_URL;
 ---
 
 <Base title={data ? data.meeting.title : 'Meeting not found'}>

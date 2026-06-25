@@ -1,6 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import Navbar from '../components/Navbar.astro';
+import { getApiUrl } from '../lib/api';
+
+const apiUrl = getApiUrl();
 
 // Handle form submission server-side
 if (Astro.request.method === 'POST') {
@@ -12,7 +15,7 @@ if (Astro.request.method === 'POST') {
     const description = data.get('description') as string;
 
     try {
-      const res = await fetch(`${import.meta.env.PUBLIC_API_URL}/api/meetings`, {
+      const res = await fetch(`${apiUrl}/api/meetings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, description }),
@@ -84,7 +87,7 @@ if (Astro.request.method === 'POST') {
       </div>
     </section>
 
-    <!-- Forms -->
+
     <section class="forms-section">
       <div class="forms-grid">
 
@@ -169,7 +172,7 @@ if (Astro.request.method === 'POST') {
   </main>
 
   <footer class="footer">
-    <p>Built with ♥ by Moroni Perez</p>
+    <!-- <p>Built with ♥ by Moroni Perez</p> -->
   </footer>
 </Base>
 
