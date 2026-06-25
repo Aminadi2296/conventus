@@ -38,6 +38,10 @@ async function connectToDatabase() {
       res.json({ status: 'ok' });
     });
 
+    app.get('/', (req, res) => {
+      res.json({ status: 'ok', message: 'Calendario API is running' });
+    });
+
     // Create a meeting
     app.post('/api/meetings', async (req, res) => {
       const { title, description } = req.body;
