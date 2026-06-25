@@ -39,7 +39,7 @@ if (Astro.request.method === 'POST') {
 }
 ---
 
-<Base title="Schedule a Meeting">
+<Base title="Agenda una reunión">
   <Navbar />
 
   <main>
@@ -51,11 +51,11 @@ if (Astro.request.method === 'POST') {
           No signups. No friction.
         </div>
         <h1 class="hero-title" style="animation-delay: 80ms">
-          Find the time<br /><em>everyone</em> can meet.
+          Encuentra el tiempo<br /><em>todos</em> pueden asistir.
         </h1>
         <p class="hero-sub" style="animation-delay: 160ms">
-          Create a meeting, share the link, let your team mark their
-          availability — Conventus finds the overlap instantly.
+          Crea una reunión, comparte el link, deja que tu equipo marque su
+          disponibilidad — Conventus encuentra el overlap instantáneamente.
         </p>
       </div>
 
@@ -63,8 +63,8 @@ if (Astro.request.method === 'POST') {
         <!-- Decorative availability grid -->
         <div class="preview-card">
           <div class="preview-header">
-            <span class="preview-title">Team Sync Q3</span>
-            <span class="preview-count">4 participants</span>
+            <span class="preview-title">Reunión de Equipo Trimestre 3</span>
+            <span class="preview-count">4 participantes</span>
           </div>
           <div class="preview-grid">
             {
@@ -86,7 +86,7 @@ if (Astro.request.method === 'POST') {
           </div>
           <div class="preview-match">
             <span class="match-icon">✦</span>
-            Best slot: <strong>Wednesday 10:00</strong>
+            Mejor slot: <strong>Miércoles 10:00</strong>
           </div>
         </div>
       </div>
@@ -98,14 +98,14 @@ if (Astro.request.method === 'POST') {
         <div class="form-card" style="animation-delay: 100ms">
           <div class="form-header">
             <span class="form-number">01</span>
-            <h2>Create a meeting</h2>
-            <p>Give it a name and share the link with your team.</p>
+            <h2>Crea una reunión</h2>
+            <p>Dale un nombre y comparte el link con tu equipo.</p>
           </div>
 
           <form method="POST" class="form">
             <input type="hidden" name="action" value="create" />
             <div class="field">
-              <label for="title">Meeting title</label>
+              <label for="title">Título de la reunión</label>
               <input
                 type="text"
                 id="title"
@@ -117,16 +117,16 @@ if (Astro.request.method === 'POST') {
             </div>
             <div class="field">
               <label for="description"
-                >Description <span class="optional">(optional)</span></label
+                >Descripción <span class="optional">(opcional)</span></label
               >
               <textarea
                 id="description"
                 name="description"
                 rows="3"
-                placeholder="What's this meeting about?"></textarea>
+                placeholder="¿Sobre qué se trata la reunión?"></textarea>
             </div>
             <button type="submit" class="btn-primary">
-              Create meeting
+              Crear reunión
               <span class="btn-arrow">→</span>
             </button>
           </form>
@@ -139,14 +139,14 @@ if (Astro.request.method === 'POST') {
         >
           <div class="form-header">
             <span class="form-number">02</span>
-            <h2>Join a meeting</h2>
-            <p>Already have a meeting ID? Jump straight in.</p>
+            <h2>Únete a una reunión</h2>
+            <p>¿Ya tienes un ID de reunión? Ingresa directamente.</p>
           </div>
 
           <form method="POST" class="form">
             <input type="hidden" name="action" value="find" />
             <div class="field">
-              <label for="meetingId">Meeting ID</label>
+              <label for="meetingId">ID de la reunión</label>
               <input
                 type="text"
                 id="meetingId"
@@ -158,20 +158,20 @@ if (Astro.request.method === 'POST') {
               />
             </div>
             <button type="submit" class="btn-secondary">
-              Go to meeting
+              Ir a la reunión
               <span class="btn-arrow">→</span>
             </button>
           </form>
 
           <div class="how-it-works">
-            <h3>How it works</h3>
+            <h3>Cómo funciona</h3>
             <ol>
-              <li><strong>Create</strong> a meeting and copy the link</li>
+              <li><strong>Crea</strong> una reunión y copia el link</li>
               <li>
-                <strong>Share</strong> it with everyone who needs to attend
+                <strong>Comparte</strong> con todos los que necesitan asistir
               </li>
-              <li><strong>Each person</strong> marks their available times</li>
-              <li><strong>Conventus</strong> highlights the overlaps</li>
+              <li><strong>Cada persona</strong> marca su disponibilidad</li>
+              <li><strong>Conventus</strong> resalta los overlaps</li>
             </ol>
           </div>
         </div>
