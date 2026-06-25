@@ -54,7 +54,8 @@ if (Astro.request.method === 'POST') {
           Find the time<br /><em>everyone</em> can meet.
         </h1>
         <p class="hero-sub" style="animation-delay: 160ms">
-          Create a meeting, share the link, let your team mark their availability — Conventus finds the overlap instantly.
+          Create a meeting, share the link, let your team mark their
+          availability — Conventus finds the overlap instantly.
         </p>
       </div>
 
@@ -66,18 +67,22 @@ if (Astro.request.method === 'POST') {
             <span class="preview-count">4 participants</span>
           </div>
           <div class="preview-grid">
-            {['Mo', 'Tu', 'We', 'Th', 'Fr'].map((day) => (
-              <div class="preview-col">
-                <span class="preview-day">{day}</span>
-                {[0,1,2,3,4,5].map((i) => {
-                  const filled = Math.random() > 0.45;
-                  const hot = Math.random() > 0.75 && filled;
-                  return (
-                    <div class={`preview-cell ${filled ? 'filled' : ''} ${hot ? 'hot' : ''}`}></div>
-                  );
-                })}
-              </div>
-            ))}
+            {
+              ['Mo', 'Tu', 'We', 'Th', 'Fr'].map((day) => (
+                <div class="preview-col">
+                  <span class="preview-day">{day}</span>
+                  {[0, 1, 2, 3, 4, 5].map((i) => {
+                    const filled = Math.random() > 0.45;
+                    const hot = Math.random() > 0.75 && filled;
+                    return (
+                      <div
+                        class={`preview-cell ${filled ? 'filled' : ''} ${hot ? 'hot' : ''}`}
+                      />
+                    );
+                  })}
+                </div>
+              ))
+            }
           </div>
           <div class="preview-match">
             <span class="match-icon">✦</span>
@@ -87,10 +92,8 @@ if (Astro.request.method === 'POST') {
       </div>
     </section>
 
-
     <section class="forms-section">
       <div class="forms-grid">
-
         <!-- Create -->
         <div class="form-card" style="animation-delay: 100ms">
           <div class="form-header">
@@ -113,13 +116,14 @@ if (Astro.request.method === 'POST') {
               />
             </div>
             <div class="field">
-              <label for="description">Description <span class="optional">(optional)</span></label>
+              <label for="description"
+                >Description <span class="optional">(optional)</span></label
+              >
               <textarea
                 id="description"
                 name="description"
                 rows="3"
-                placeholder="What's this meeting about?"
-              ></textarea>
+                placeholder="What's this meeting about?"></textarea>
             </div>
             <button type="submit" class="btn-primary">
               Create meeting
@@ -129,7 +133,10 @@ if (Astro.request.method === 'POST') {
         </div>
 
         <!-- Find -->
-        <div class="form-card form-card--secondary" style="animation-delay: 200ms">
+        <div
+          class="form-card form-card--secondary"
+          style="animation-delay: 200ms"
+        >
           <div class="form-header">
             <span class="form-number">02</span>
             <h2>Join a meeting</h2>
@@ -160,13 +167,14 @@ if (Astro.request.method === 'POST') {
             <h3>How it works</h3>
             <ol>
               <li><strong>Create</strong> a meeting and copy the link</li>
-              <li><strong>Share</strong> it with everyone who needs to attend</li>
+              <li>
+                <strong>Share</strong> it with everyone who needs to attend
+              </li>
               <li><strong>Each person</strong> marks their available times</li>
               <li><strong>Conventus</strong> highlights the overlaps</li>
             </ol>
           </div>
         </div>
-
       </div>
     </section>
   </main>
@@ -245,7 +253,7 @@ if (Astro.request.method === 'POST') {
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 1.5rem;
-    box-shadow: 0 4px 40px rgba(14,14,16,0.07);
+    box-shadow: 0 4px 40px rgba(14, 14, 16, 0.07);
   }
 
   .preview-header {
@@ -403,7 +411,9 @@ if (Astro.request.method === 'POST') {
     font-size: 0.95rem;
     color: var(--ink);
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
     resize: vertical;
   }
 
@@ -431,7 +441,9 @@ if (Astro.request.method === 'POST') {
     font-weight: 600;
     cursor: pointer;
     border: none;
-    transition: transform 0.15s, box-shadow 0.15s;
+    transition:
+      transform 0.15s,
+      box-shadow 0.15s;
     margin-top: 0.25rem;
   }
 
@@ -442,7 +454,7 @@ if (Astro.request.method === 'POST') {
 
   .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(14,14,16,0.2);
+    box-shadow: 0 4px 16px rgba(14, 14, 16, 0.2);
   }
 
   .btn-secondary {
@@ -452,7 +464,7 @@ if (Astro.request.method === 'POST') {
 
   .btn-secondary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(232,160,32,0.35);
+    box-shadow: 0 4px 16px rgba(232, 160, 32, 0.35);
   }
 
   .btn-arrow {
@@ -532,8 +544,14 @@ if (Astro.request.method === 'POST') {
 
   /* Animations */
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* Responsive */
