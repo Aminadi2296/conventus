@@ -14,10 +14,9 @@ const TIME_BLOCKS = [
 interface Props {
   meetingId: string;
   apiUrl: string;
-  onSubmitSuccess: () => void;
 }
 
-export default function AvailabilityGrid({ meetingId, apiUrl, onSubmitSuccess }: Props) {
+export default function AvailabilityGrid({ meetingId, apiUrl }: Props) {
   const [step, setStep] = useState<'name' | 'grid' | 'submitting' | 'done'>('name');
   const [username, setUsername] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -73,7 +72,7 @@ export default function AvailabilityGrid({ meetingId, apiUrl, onSubmitSuccess }:
 
       if (!res.ok) throw new Error();
       setStep('done');
-      setTimeout(() => onSubmitSuccess(), 1200);
+      setTimeout(() => window.location.reload(), 1200);
     } catch {
       setError('Algo salió mal. Inténtalo de nuevo.');
       setStep('grid');
@@ -227,7 +226,7 @@ export default function AvailabilityGrid({ meetingId, apiUrl, onSubmitSuccess }:
 
       </AnimatePresence>
 
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .availability-island {
           min-height: 200px;
         }
@@ -482,7 +481,7 @@ export default function AvailabilityGrid({ meetingId, apiUrl, onSubmitSuccess }:
           font-size: 1.4rem;
           font-weight: 700;
         }
-      `}</style>
+      ` }} />
     </div>
   );
 }
