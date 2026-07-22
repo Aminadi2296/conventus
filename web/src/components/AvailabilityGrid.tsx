@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const DAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+const DAYS = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'];
 const HOURS = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
 
 const TIME_BLOCKS = [
-  { label: 'Morning', hours: HOURS.slice(6, 12), icon: '🌤' },
-  { label: 'Afternoon', hours: HOURS.slice(12, 18), icon: '☀️' },
-  { label: 'Evening', hours: HOURS.slice(18, 24), icon: '🌙' },
-  { label: 'Night', hours: HOURS.slice(0, 6), icon: '🌑' },
+  { label: 'Mañana', hours: HOURS.slice(6, 12), icon: '🌤' },
+  { label: 'Tarde', hours: HOURS.slice(12, 18), icon: '☀️' },
+  { label: 'Noche', hours: HOURS.slice(18, 24), icon: '🌙' },
+  { label: 'Madrugada', hours: HOURS.slice(0, 6), icon: '🌑' },
 ];
 
 interface Props {
@@ -59,7 +59,7 @@ export default function AvailabilityGrid({ meetingId, apiUrl, onSubmitSuccess }:
 
   const handleSubmit = async () => {
     if (selected.size === 0) {
-      setError('Please select at least one time slot.');
+      setError('Por favor selecciona al menos un horario.');
       return;
     }
 
@@ -75,7 +75,7 @@ export default function AvailabilityGrid({ meetingId, apiUrl, onSubmitSuccess }:
       setStep('done');
       setTimeout(() => onSubmitSuccess(), 1200);
     } catch {
-      setError('Something went wrong. Please try again.');
+      setError('Algo salió mal. Inténtalo de nuevo.');
       setStep('grid');
     }
   };
@@ -100,11 +100,11 @@ export default function AvailabilityGrid({ meetingId, apiUrl, onSubmitSuccess }:
             transition={{ duration: 0.25 }}
             className="step-name"
           >
-            <p className="step-label">Your name</p>
+            <p className="step-label">Tu nombre</p>
             <input
               type="text"
               className="name-input"
-              placeholder="e.g. Alex, Jordan…"
+              placeholder="ej. Alex, Jordan…"
               value={username}
               onChange={e => setUsername(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && username.trim() && setStep('grid')}
@@ -115,7 +115,7 @@ export default function AvailabilityGrid({ meetingId, apiUrl, onSubmitSuccess }:
               disabled={!username.trim()}
               onClick={() => setStep('grid')}
             >
-              Continue →
+              Continuar →
             </button>
           </motion.div>
         )}
@@ -131,9 +131,9 @@ export default function AvailabilityGrid({ meetingId, apiUrl, onSubmitSuccess }:
           >
             <div className="grid-header">
               <p className="grid-greeting">
-                Hey <strong>{username}</strong> — drag to mark your availability
+                Hola <strong>{username}</strong> — arrastra para marcar tu disponibilidad
               </p>
-              <span className="selected-count">{selected.size} slots selected</span>
+              <span className="selected-count">{selected.size} horarios seleccionados</span>
             </div>
 
             {/* Block tabs */}
@@ -184,9 +184,9 @@ export default function AvailabilityGrid({ meetingId, apiUrl, onSubmitSuccess }:
             {error && <p className="error-msg">{error}</p>}
 
             <div className="grid-actions">
-              <button className="btn-back" onClick={() => setStep('name')}>← Back</button>
+              <button className="btn-back" onClick={() => setStep('name')}>← Volver</button>
               <button className="btn-submit" onClick={handleSubmit}>
-                Submit availability
+                Enviar disponibilidad
               </button>
             </div>
           </motion.div>
@@ -201,7 +201,7 @@ export default function AvailabilityGrid({ meetingId, apiUrl, onSubmitSuccess }:
             className="status-screen"
           >
             <div className="spinner" />
-            <p>Saving your availability…</p>
+            <p>Guardando tu disponibilidad…</p>
           </motion.div>
         )}
 
@@ -221,7 +221,7 @@ export default function AvailabilityGrid({ meetingId, apiUrl, onSubmitSuccess }:
             >
               ✓
             </motion.div>
-            <p>Availability saved!</p>
+            <p>¡Disponibilidad guardada!</p>
           </motion.div>
         )}
 

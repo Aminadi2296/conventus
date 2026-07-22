@@ -27,7 +27,7 @@ try {
 
 ---
 
-<Base title={data ? data.meeting.title : 'Meeting not found'}>
+<Base title={data ? data.meeting.title : 'Reunión no encontrada'}>
   <Navbar meetingId={id} />
 
   {loadError ? (
@@ -38,9 +38,9 @@ try {
     </main>
   ) : notFound ? (
     <main class="not-found">
-      <h1>Meeting not found</h1>
-      <p>The meeting ID <code>{id}</code> doesn't exist or has been deleted.</p>
-      <a href="/" class="back-link">← Back to home</a>
+      <h1>Reunión no encontrada</h1>
+      <p>El ID de la reunión <code>{id}</code> no existe o ha sido borrado.</p>
+      <a href="/" class="back-link">← Volver a Inicio</a>
     </main>
   ) : data && (
     <main class="meeting-page">
@@ -52,7 +52,7 @@ try {
             <div class="meta-row">
               <span class="meeting-id-badge">{data.meeting.id}</span>
               <span class="participants-count">
-                {data.proposals.length} participant{data.proposals.length !== 1 ? 's' : ''}
+                {data.proposals.length} participante{data.proposals.length !== 1 ? 's' : ''}
               </span>
             </div>
             <h1 class="meeting-title">{data.meeting.title}</h1>
@@ -67,13 +67,13 @@ try {
                 <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
                 <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
               </svg>
-              Share
+              Compartir
             </button>
             <button class="btn-delete" id="deleteBtn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/><path d="M10,11v6"/><path d="M14,11v6"/><path d="M9,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1V6"/>
               </svg>
-              Delete
+              Eliminar
             </button>
           </div>
         </div>
@@ -88,7 +88,7 @@ try {
           <div class="card">
             <div class="card-header">
               <span class="card-icon">✦</span>
-              <h2>Best times</h2>
+              <h2>Mejores horarios</h2>
             </div>
 
             {data.commonAvailability.length > 0 ? (
@@ -101,20 +101,20 @@ try {
                         <span class="slot-day">{day}</span>
                         <span class="slot-hour">{time}</span>
                       </div>
-                      <span class="slot-badge">All {slot.users.length}</span>
+                      <span class="slot-badge">Todos {slot.users.length}</span>
                     </li>
                   );
                 })}
               </ul>
             ) : data.proposals.length < 2 ? (
-              <p class="empty-state">Add at least 2 participants to see overlaps.</p>
+              <p class="empty-state">Añade al menos 2 participantes para ver coincidencias.</p>
             ) : (
-              <p class="empty-state">No common slot found yet.</p>
+              <p class="empty-state">No se encontraron horarios comunes aún.</p>
             )}
 
             {data.otherAvailability.length > 0 && (
               <details class="other-slots">
-                <summary>More overlaps ({data.otherAvailability.length})</summary>
+                <summary>Más coincidencias ({data.otherAvailability.length})</summary>
                 <ul class="slot-list slot-list--other">
                   {data.otherAvailability.map(slot => {
                     const [day, time] = slot.time.split('-');
@@ -124,7 +124,7 @@ try {
                           <span class="slot-day">{day}</span>
                           <span class="slot-hour">{time}</span>
                         </div>
-                        <span class="slot-badge slot-badge--muted">{slot.count} people</span>
+                        <span class="slot-badge slot-badge--muted">{slot.count} personas</span>
                       </li>
                     );
                   })}
@@ -137,11 +137,11 @@ try {
           <div class="card">
             <div class="card-header">
               <span class="card-icon">👥</span>
-              <h2>Participants</h2>
+              <h2>Participantes</h2>
             </div>
 
             {data.proposals.length === 0 ? (
-              <p class="empty-state">No one has added their availability yet.</p>
+              <p class="empty-state">Nadie ha añadido su disponibilidad aún.</p>
             ) : (
               <ul class="proposal-list">
                 {data.proposals.map(p => (
@@ -170,7 +170,7 @@ try {
           <div class="card card--sticky">
             <div class="card-header">
               <span class="card-icon">📅</span>
-              <h2>Add your availability</h2>
+              <h2>Añade tu disponibilidad</h2>
             </div>
             <AvailabilityGrid
               client:load
@@ -191,11 +191,11 @@ try {
 <div id="shareModal" class="modal-backdrop" style="display:none">
   <div class="modal">
     <button class="modal-close" id="closeModal">×</button>
-    <h3>Share this meeting</h3>
-    <p>Send this link to your team:</p>
+    <h3>Compartir esta reunión</h3>
+    <p>Envía este enlace a tu equipo:</p>
     <div class="share-url-row">
       <code id="shareUrl" class="share-url"></code>
-      <button class="btn-copy" id="copyBtn">Copy</button>
+      <button class="btn-copy" id="copyBtn">Copiar</button>
     </div>
     <div class="share-buttons">
       <a id="whatsappLink" href="#" target="_blank" class="share-btn share-btn--wa">
@@ -221,8 +221,8 @@ try {
   const url = window.location.href;
 
   if (shareUrl) shareUrl.textContent = url;
-  if (whatsappLink) whatsappLink.href = `https://wa.me/?text=${encodeURIComponent('Join my meeting! ' + url)}`;
-  if (emailLink) emailLink.href = `mailto:?subject=Meeting invitation&body=Join here: ${url}`;
+  if (whatsappLink) whatsappLink.href = `https://wa.me/?text=${encodeURIComponent('¡Únete a mi reunión! ' + url)}`;
+  if (emailLink) emailLink.href = `mailto:?subject=Invitación a reunión&body=Únete aquí: ${url}`;
 
   shareBtn?.addEventListener('click', () => { if (modal) modal.style.display = 'flex'; });
   closeModal?.addEventListener('click', () => { if (modal) modal.style.display = 'none'; });
@@ -230,16 +230,16 @@ try {
 
   copyBtn?.addEventListener('click', async () => {
     await navigator.clipboard.writeText(url);
-    if (copyBtn) { copyBtn.textContent = 'Copied!'; setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000); }
+    if (copyBtn) { copyBtn.textContent = '¡Copiado!'; setTimeout(() => { copyBtn.textContent = 'Copiar'; }, 2000); }
   });
 
   // Delete meeting
   const deleteBtn = document.getElementById('deleteBtn');
   deleteBtn?.addEventListener('click', async () => {
-    if (!confirm('Delete this meeting? This cannot be undone.')) return;
+    if (!confirm('¿Eliminar esta reunión? Esta acción no se puede deshacer.')) return;
     const res = await fetch(`${apiUrl}/api/meetings/${meetingId}`, { method: 'DELETE' });
     if (res.ok) window.location.href = '/';
-    else alert('Failed to delete meeting.');
+    else alert('Error al eliminar la reunión.');
   });
 </script>
 
