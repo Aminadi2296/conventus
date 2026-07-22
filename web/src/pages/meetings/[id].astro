@@ -10,6 +10,7 @@ const { id } = Astro.params;
 
 let data: MeetingDetail | null = null;
 let notFound = false;
+let loadError = false;
 
 try {
   const res = await fetch(`${apiUrl}/api/meetings/${id}`);
@@ -17,9 +18,11 @@ try {
     notFound = true;
   } else if (res.ok) {
     data = await res.json();
+  } else {
+    loadError = true;
   }
 } catch (e) {
-  notFound = true;
+  loadError = true;
 }
 
 ---
@@ -27,7 +30,13 @@ try {
 <Base title={data ? data.meeting.title : 'Meeting not found'}>
   <Navbar meetingId={id} />
 
-  {notFound ? (
+  {loadError ? (
+    <main class="not-found">
+      <h1>No se pudo cargar la reunión</h1>
+      <p>La API no respondió. Intenta de nuevo en unos segundos (Render puede tardar al despertar).</p>
+      <a href="/" class="back-link">← Volver al inicio</a>
+    </main>
+  ) : notFound ? (
     <main class="not-found">
       <h1>Meeting not found</h1>
       <p>The meeting ID <code>{id}</code> doesn't exist or has been deleted.</p>

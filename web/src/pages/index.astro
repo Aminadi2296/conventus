@@ -5,6 +5,8 @@ import { getApiUrl } from '../lib/api';
 
 const apiUrl = getApiUrl();
 
+let createError: string | null = null;
+
 // Handle form submission server-side
 if (Astro.request.method === 'POST') {
   const data = await Astro.request.formData();
@@ -23,10 +25,17 @@ if (Astro.request.method === 'POST') {
 
       if (res.ok) {
         const { meetingId } = await res.json();
-        return Astro.redirect(`/meetings/${meetingId}`);
+        return Astro.redirect(`/meetings/${meetingId}`, 303);
       }
+
+      const body = await res.json().catch(() => null);
+      createError =
+        (body && typeof body.error === 'string' && body.error) ||
+        `No se pudo crear la reunión (HTTP ${res.status}).`;
     } catch (e) {
       console.error(e);
+      createError =
+        'No se pudo conectar con la API. Si usas localhost:3000, ejecuta `npm run dev` en la carpeta api.';
     }
   }
 
@@ -102,7 +111,11 @@ if (Astro.request.method === 'POST') {
             <p>Dale un nombre y comparte el link con tu equipo.</p>
           </div>
 
-          <form method="POST" class="form">
+          {createError && (
+            <p class="form-error" role="alert">{createError}</p>
+          )}
+
+          <form method="POST" action="/" class="form">
             <input type="hidden" name="action" value="create" />
             <div class="field">
               <label for="title">Título de la reunión</label>
@@ -143,7 +156,7 @@ if (Astro.request.method === 'POST') {
             <p>¿Ya tienes un ID de reunión? Ingresa directamente.</p>
           </div>
 
-          <form method="POST" class="form">
+          <form method="POST" action="/" class="form">
             <input type="hidden" name="action" value="find" />
             <div class="field">
               <label for="meetingId">ID de la reunión</label>
@@ -353,6 +366,17 @@ if (Astro.request.method === 'POST') {
 
   .form-card--secondary {
     background: var(--cream);
+  }
+
+  .form-error {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    font-size: 0.875rem;
+    line-height: 1.4;
   }
 
   .form-number {
